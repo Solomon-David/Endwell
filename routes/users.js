@@ -66,15 +66,30 @@ createItem
             check = "matric"
             console.log(req.body.info + " is not email")
         }
-        console.log(check)
-        model.find({ check: req.body.info }, async function(err, item) {
-            let pas = item[0].password
-            let log = await bcrypt.compare(pass, pas)
-            console.log("we found " + item[0] + log)
-        })
 
+        //finding and logging-in user
+        var user = await model.findOne({ check: req.body.info })
+        let pas = user.password
+        let log = await bcrypt.compare(pass, pas)
+        if (log) {
+            console.log("Logged " + user.fname + " " + user.lname + " in successfully.")
+            this.redirectUser(req, res, user)
+        } else { console.log(`User ${check} and password do not match`) }
 
+        //checking user role
+    }
 
+    function redirectUser(req, res, user) {
+        if (user.role == "admin") {
+            console.log("this is a user")
+            res.redirect("./admin/index")
+        } else if (user.role == "publisher") {
+            console.log("this is a user")
+            res.redirect("./publisher/index")
+        } else {
+            console.log("this is a user")
+            res.redirect("./index")
+        }
     }
 
     /*
